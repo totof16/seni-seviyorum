@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ceren</title>
+<style>
+:root{--bg:#3a0d1c;--bg2:#160308;--ink:#fff3f0;--glow:#ff5c7a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(ellipse at 50% 45%,var(--bg) 0%,var(--bg2) 75%);overflow:hidden;font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;color:var(--ink)}
+main{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 1.5rem;box-sizing:border-box}
+h1{margin:0;font-weight:500;font-style:italic;font-size:clamp(2rem,9vw,4.2rem);line-height:1.2;text-shadow:0 0 30px var(--glow),0 0 80px rgba(255,92,122,.5);animation:in 2s ease both}
+.bloom{font-size:clamp(2.2rem,9vw,3.6rem);margin:1rem 0 1.6rem}
+.btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:in 2s .8s ease both}
+button{font:inherit;font-size:1.3rem;padding:.7rem 1.8rem;border-radius:999px;cursor:pointer;border:1.5px solid var(--glow);transition:transform .2s}
+button:hover{transform:scale(1.05)}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#yes{background:var(--glow);color:#2a0511;font-weight:600}
+#maybe{background:transparent;color:var(--ink)}
+#maybe{transition:translate .35s ease,transform .2s}
+#msg{margin-top:1.6rem;min-height:2.4rem;font-style:italic;font-size:clamp(1.2rem,5vw,1.7rem);opacity:0;transition:opacity 1s}
+#msg.show{opacity:1}
+@keyframes in{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.rose{position:absolute;top:-10%;z-index:1;user-select:none;pointer-events:none;animation:fall linear infinite;opacity:.85}
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rose{animation:none;top:auto}h1,.btns{animation:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Ceren,<br>benimle bir randevuya çıkar mısın?</h1>
+<div class="bloom">🌹</div>
+<div class="btns">
+  <button id="yes">Evet</button>
+  <button id="maybe">hayır</button>
+</div>
+<div id="msg" aria-live="polite"></div>
+</main>
+<script>
+function rain(n,speed){
+  for(var i=0;i<n;i++){
+    var r=document.createElement('div');
+    r.className='rose';
+    r.textContent='🌹';
+    r.style.left=(Math.random()*96)+'%';
+    r.style.fontSize=(18+Math.random()*30)+'px';
+    r.style.animationDuration=(speed+Math.random()*speed)+'s';
+    r.style.animationDelay=(-Math.random()*speed*2)+'s';
+    document.body.appendChild(r);
+  }
+}
+rain(18,9);
+var msg=document.getElementById('msg');
+function say(t){msg.textContent=t;msg.classList.remove('show');void msg.offsetWidth;msg.classList.add('show');}
+document.getElementById('yes').addEventListener('click',function(){
+  rain(30,4);
+  say('Çok sevindim! Bana yaz, birlikte bir gün seçelim 🌹');
+});
+var maybe=document.getElementById('maybe');
+var dx=0,dy=0;
+var last=0;
+function dodge(e){
+  var t=Date.now();
+  if(t-last<200){return;}
+  last=t;
+  if(e&&e.cancelable){e.preventDefault();}
+  var p=maybe.offsetParent||document.body;
+  var pr=p.getBoundingClientRect();
+  var baseLeft=pr.left+p.clientLeft+maybe.offsetLeft;
+  var baseTop=pr.top+p.clientTop+maybe.offsetTop;
+  var w=maybe.offsetWidth,h=maybe.offsetHeight;
+  var x=10+Math.random()*Math.max(0,window.innerWidth-w-20);
+  var y=10+Math.random()*Math.max(0,window.innerHeight-h-20);
+  dx=x-baseLeft; dy=y-baseTop;
+  maybe.style.translate=dx+'px '+dy+'px';
+  say('');
+}
+maybe.addEventListener('pointerenter',dodge);
+maybe.addEventListener('pointerdown',dodge);
+maybe.addEventListener('touchstart',dodge,{passive:false});
+maybe.addEventListener('click',function(e){e.preventDefault();});
+</script>
+</body>
+</html>
